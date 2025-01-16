@@ -97,6 +97,7 @@ public class DeliveryServiceImpl implements DeliveryService {
      * - Hvis leveringen ikke har en drone, kastes fejl.
      * - Hvis den allerede er afsluttet, kastes en fejl.
      */
+    @Override
     public Delivery finishDelivery(Long deliveryId) {
         Delivery delivery = findDeliveryOrThrow(deliveryId);
 

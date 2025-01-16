@@ -13,4 +13,6 @@ public interface DeliveryService {
     List<Delivery> getAllDeliveriesWithoutDrone();
 
     Delivery scheduleDelivery(Long deliveryId, Long droneId);
+
+    Delivery finishDelivery(Long deliveryId);
 }
