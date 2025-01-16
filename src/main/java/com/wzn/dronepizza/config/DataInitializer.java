@@ -9,7 +9,6 @@ import com.wzn.dronepizza.repository.StationRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import java.time.LocalDateTime;
 import java.util.List;

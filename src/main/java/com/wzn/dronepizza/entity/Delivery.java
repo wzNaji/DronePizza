@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Data
-@NoArgsConstructor
 public class Delivery {
 
     @Id
