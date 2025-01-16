@@ -34,6 +34,9 @@ public class Delivery {
         this.pizza = pizza;
     }
 
+    public Delivery() {
+
+    }
     public Delivery(String address, LocalDateTime expectedDeliveryTime, LocalDateTime actualDeliveryTime, Drone drone, Pizza pizza) {
         this.address = address;
         this.expectedDeliveryTime = expectedDeliveryTime;
@@ -42,24 +45,48 @@ public class Delivery {
         this.pizza = pizza;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
     public void setAddress(String address) {
         this.address = address;
     }
 
+    public LocalDateTime getExpectedDeliveryTime() {
+        return expectedDeliveryTime;
+    }
+
     public void setExpectedDeliveryTime(LocalDateTime expectedDeliveryTime) {
         this.expectedDeliveryTime = expectedDeliveryTime;
+    }
+
+    public LocalDateTime getActualDeliveryTime() {
+        return actualDeliveryTime;
     }
 
     public void setActualDeliveryTime(LocalDateTime actualDeliveryTime) {
         this.actualDeliveryTime = actualDeliveryTime;
     }
 
+    public Drone getDrone() {
+        return drone;
+    }
+
     public void setDrone(Drone drone) {
         this.drone = drone;
+    }
+
+    public Pizza getPizza() {
+        return pizza;
     }
 
     public void setPizza(Pizza pizza) {
