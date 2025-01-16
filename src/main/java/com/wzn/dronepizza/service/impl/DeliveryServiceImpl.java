@@ -64,11 +64,7 @@ public class DeliveryServiceImpl implements DeliveryService {
      */
     @Override
     public List<Delivery> getAllDeliveriesWithoutDrone() {
-        try {
             return deliveryRepository.findByDroneIsNullAndActualDeliveryTimeIsNull();
-        } catch (Exception e) {
-            throw new RuntimeException("Kan ikke fetch leveringer uden drone", e);
-        }
     }
 
     /**
