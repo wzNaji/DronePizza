@@ -18,7 +18,7 @@ import java.util.UUID;
 public class DataInitializer {
 
     @Bean
-    CommandLineRunner initData(
+    CommandLineRunner initData( // cmdLineRunner gør det muligt at udføre kode efter app er startet, via dens 'run' metode
             StationRepository stationRepo,
             PizzaRepository pizzaRepo,
             DroneRepository droneRepo,

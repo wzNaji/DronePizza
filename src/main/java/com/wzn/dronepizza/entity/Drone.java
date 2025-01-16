@@ -1,15 +1,11 @@
 package com.wzn.dronepizza.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Entity
-@Data
-@NoArgsConstructor
 public class Drone {
 
     @Id
@@ -30,7 +26,39 @@ public class Drone {
         this.status = status;
         this.station = station;
     }
+    public Drone () {
 
+    }
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public UUID getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(UUID serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public DroneStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DroneStatus status) {
+        this.status = status;
+    }
+
+    public Station getStation() {
+        return station;
+    }
+
+    public void setStation(Station station) {
+        this.station = station;
+    }
 }
