@@ -30,6 +30,11 @@ public class Drone {
 
     }
 
+    public Drone(long id, DroneStatus droneStatus) {
+        this.id = id;
+        this.status = droneStatus;
+    }
+
     public Long getId() {
         return id;
     }

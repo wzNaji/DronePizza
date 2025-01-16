@@ -56,7 +56,7 @@ public class DeliveryController {
         try {
             Delivery delivery = deliveryService.createDelivery(pizzaId, address);
             response.put("success", true);
-            response.put("message", "Delivery created successfully.");
+            response.put("message", "Delivery oprettet.");
             response.put("data", delivery);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
@@ -80,7 +80,7 @@ public class DeliveryController {
         try {
             List<Delivery> list = deliveryService.getAllDeliveriesWithoutDrone();
             response.put("success", true);
-            response.put("message", "Fetched all deliveries without drone assigned.");
+            response.put("message", "Hentet alle deliveries uden droner.");
             response.put("data", list);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -96,13 +96,10 @@ public class DeliveryController {
      * Request param: deliveryId, droneId
      */
     @PostMapping("/schedule")
-    public ResponseEntity<Map<String, Object>> scheduleDelivery(
-            @RequestParam Long deliveryId,
-            @RequestParam Long droneId
-    ) {
+    public ResponseEntity<Map<String, Object>> scheduleDelivery(@RequestParam Long deliveryId) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Delivery scheduled = deliveryService.scheduleDelivery(deliveryId, droneId);
+            Delivery scheduled = deliveryService.scheduleDelivery(deliveryId);
             response.put("success", true);
             response.put("message", "Delivery scheduled successfully.");
             response.put("data", scheduled);

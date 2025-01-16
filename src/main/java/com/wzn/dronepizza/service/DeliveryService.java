@@ -12,7 +12,7 @@ public interface DeliveryService {
 
     List<Delivery> getAllDeliveriesWithoutDrone();
 
-    Delivery scheduleDelivery(Long deliveryId, Long droneId);
+    Delivery scheduleDelivery(Long deliveryId);
 
     Delivery finishDelivery(Long deliveryId);
 }

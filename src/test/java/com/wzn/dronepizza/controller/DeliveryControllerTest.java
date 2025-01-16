@@ -82,7 +82,7 @@ class DeliveryControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id").value(5))
-                .andExpect(jsonPath("$.message").value("Delivery created successfully."));
+                .andExpect(jsonPath("$.message").value("Delivery oprettet."));
     }
 
     @Test
@@ -104,7 +104,7 @@ class DeliveryControllerTest {
     void scheduleDelivery_shouldReturnOk() throws Exception {
         Delivery d = new Delivery();
         d.setId(10L);
-        given(deliveryService.scheduleDelivery(10L, 20L)).willReturn(d);
+        given(deliveryService.scheduleDelivery(10L)).willReturn(d);
 
         // Serialize request payload
         String requestJson = objectMapper.writeValueAsString(d);
@@ -122,12 +122,11 @@ class DeliveryControllerTest {
 
     @Test
     void scheduleDelivery_whenIllegalState_shouldReturn400() throws Exception {
-        given(deliveryService.scheduleDelivery(10L, 20L))
+        given(deliveryService.scheduleDelivery(10L))
                 .willThrow(new IllegalStateException("Drone er ikke i drift"));
 
         mockMvc.perform(post("/deliveries/schedule")
-                        .param("deliveryId", "10")
-                        .param("droneId", "20"))
+                        .param("deliveryId", "10"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.message").value("Drone er ikke i drift"));
