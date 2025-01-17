@@ -1,6 +1,5 @@
 package com.wzn.dronepizza.controller;
 
-import com.wzn.dronepizza.entity.Drone;
 import com.wzn.dronepizza.entity.Pizza;
 import com.wzn.dronepizza.service.PizzaService;
 import org.springframework.http.HttpStatus;
