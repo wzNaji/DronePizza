@@ -1,7 +1,7 @@
 package com.wzn.dronepizza.entity;
 
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
+
 
 import java.util.UUID;
 
@@ -28,6 +28,11 @@ public class Drone {
     }
     public Drone () {
 
+    }
+
+    public Drone(long id, DroneStatus droneStatus) {
+        this.id = id;
+        this.status = droneStatus;
     }
 
     public Long getId() {

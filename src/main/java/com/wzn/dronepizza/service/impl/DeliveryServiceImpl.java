@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class DeliveryServiceImpl implements DeliveryService {
@@ -64,11 +66,7 @@ public class DeliveryServiceImpl implements DeliveryService {
      */
     @Override
     public List<Delivery> getAllDeliveriesWithoutDrone() {
-        try {
             return deliveryRepository.findByDroneIsNullAndActualDeliveryTimeIsNull();
-        } catch (Exception e) {
-            throw new RuntimeException("Kan ikke fetch leveringer uden drone", e);
-        }
     }
 
     /**
@@ -78,21 +76,33 @@ public class DeliveryServiceImpl implements DeliveryService {
      * - Hvis levering allerede har en drone, kastes fejl.
      */
     @Override
-    public Delivery scheduleDelivery(Long deliveryId, Long droneId) {
+    public Delivery scheduleDelivery(Long deliveryId) {
         Delivery delivery = findDeliveryOrThrow(deliveryId);
 
         if (delivery.getDrone() != null) {
             throw new IllegalStateException("Levering har allerede en drone tilknyttet.");
         }
 
-        Drone drone = droneRepository.findById(droneId)
-                .orElseThrow(() -> new IllegalArgumentException("Drone med id " + droneId + " blev ikke fundet."));
+        List<Drone> listOfDrones = droneRepository.findAll();
+        List<Drone> availableDrones = new ArrayList<>();
 
-        if (!DroneStatus.I_DRIFT.equals(drone.getStatus())) {
-            throw new IllegalStateException("Drone er ikke i drift og kan ikke tildeles en levering.");
+        for (Drone drone : listOfDrones) {
+            if (drone.getStatus() == DroneStatus.I_DRIFT) {
+                availableDrones.add(drone);
+            }
         }
 
-        delivery.setDrone(drone);
+        if (availableDrones.isEmpty()) {
+            throw new IllegalStateException("Ingen tilgengelige droner.");
+        }
+
+        // Select en random drone fra index 0 til array size
+        Drone selectedDrone = availableDrones.get(
+                ThreadLocalRandom.current().nextInt(availableDrones.size())
+        );
+
+        delivery.setDrone(selectedDrone);
+
         return deliveryRepository.save(delivery);
     }
 
@@ -101,6 +111,7 @@ public class DeliveryServiceImpl implements DeliveryService {
      * - Hvis leveringen ikke har en drone, kastes fejl.
      * - Hvis den allerede er afsluttet, kastes en fejl.
      */
+    @Override
     public Delivery finishDelivery(Long deliveryId) {
         Delivery delivery = findDeliveryOrThrow(deliveryId);
 

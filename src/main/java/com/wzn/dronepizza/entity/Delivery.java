@@ -1,15 +1,11 @@
 package com.wzn.dronepizza.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
 
 import java.time.LocalDateTime;
 
-@Getter
 @Entity
-@Data
 public class Delivery {
 
     @Id

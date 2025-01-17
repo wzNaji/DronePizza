@@ -164,90 +164,78 @@ class DeliveryServiceImplTest {
     }
 
     @Test
-    void scheduleDelivery_whenDeliveryNotFound_throwsException() {
-        // given
-        given(deliveryRepository.findById(999L)).willReturn(Optional.empty());
-
-        // when + then
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> deliveryService.scheduleDelivery(999L, 1L));
-        assertTrue(ex.getMessage().contains("Levering med id 999 blev ikke fundet."));
-    }
-
-    @Test
     void scheduleDelivery_whenDeliveryAlreadyHasDrone_throwsException() {
         // given
-        Delivery existingDelivery = new Delivery();
-        existingDelivery.setId(300L);
-        existingDelivery.setDrone(new Drone()); // Already has a drone
+        Delivery delivery = new Delivery();
+        delivery.setId(300L);
+        delivery.setDrone(new Drone()); // Already assigned a drone
 
-        given(deliveryRepository.findById(300L)).willReturn(Optional.of(existingDelivery));
+        given(deliveryRepository.findById(300L)).willReturn(Optional.of(delivery));
 
         // when + then
-        IllegalStateException ex = assertThrows(IllegalStateException.class,
-                () -> deliveryService.scheduleDelivery(300L, 400L));
-        assertTrue(ex.getMessage().contains("Levering har allerede en drone"));
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> deliveryService.scheduleDelivery(300L));
+        assertEquals("Levering har allerede en drone tilknyttet.", exception.getMessage());
+        verify(deliveryRepository).findById(300L);
+        verifyNoInteractions(droneRepository);
     }
 
     @Test
-    void scheduleDelivery_whenDroneNotFound_throwsException() {
+    void scheduleDelivery_whenNoAvailableDrones_throwsException() {
         // given
-        Delivery existingDelivery = new Delivery();
-        existingDelivery.setId(300L);
-        existingDelivery.setDrone(null);
+        Delivery delivery = new Delivery();
+        delivery.setId(300L);
+        delivery.setDrone(null);
 
-        given(deliveryRepository.findById(300L)).willReturn(Optional.of(existingDelivery));
-        given(droneRepository.findById(999L)).willReturn(Optional.empty());
+        List<Drone> allDrones = List.of(
+                new Drone(1L, DroneStatus.UDE_AF_DRIFT),
+                new Drone(2L, DroneStatus.UDE_AF_DRIFT)
+        ); // All drones are not in service
+
+        given(deliveryRepository.findById(300L)).willReturn(Optional.of(delivery));
+        given(droneRepository.findAll()).willReturn(allDrones);
 
         // when + then
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> deliveryService.scheduleDelivery(300L, 999L));
-        assertTrue(ex.getMessage().contains("Drone med id 999 blev ikke fundet."));
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> deliveryService.scheduleDelivery(300L));
+        assertEquals("Ingen tilgengelige droner.", exception.getMessage());
+
+        // Verify the repository interactions
+        verify(deliveryRepository).findById(300L); // Ensures findById was called
+        verify(droneRepository).findAll(); // Ensures the drones were fetched
+        verifyNoMoreInteractions(deliveryRepository); // Ensures no unexpected interactions
     }
 
-    @Test
-    void scheduleDelivery_whenDroneIsNotI_Drift_throwsException() {
-        // given
-        Delivery existingDelivery = new Delivery();
-        existingDelivery.setId(300L);
 
-        Drone notActiveDrone = new Drone();
-        notActiveDrone.setId(999L);
-        notActiveDrone.setStatus(DroneStatus.UDE_AF_DRIFT);
-
-        given(deliveryRepository.findById(300L)).willReturn(Optional.of(existingDelivery));
-        given(droneRepository.findById(999L)).willReturn(Optional.of(notActiveDrone));
-
-        // when + then
-        IllegalStateException ex = assertThrows(IllegalStateException.class,
-                () -> deliveryService.scheduleDelivery(300L, 999L));
-        assertTrue(ex.getMessage().contains("Drone er ikke i drift"));
-    }
 
     @Test
-    void scheduleDelivery_successfulCase() {
+    void scheduleDelivery_whenAvailableDronesExist_assignsRandomDrone() {
         // given
-        Delivery existingDelivery = new Delivery();
-        existingDelivery.setId(300L);
-        existingDelivery.setDrone(null);
+        Delivery delivery = new Delivery();
+        delivery.setId(300L);
+        delivery.setDrone(null);
 
-        Drone activeDrone = new Drone();
-        activeDrone.setId(999L);
-        activeDrone.setStatus(DroneStatus.I_DRIFT);
+        Drone drone1 = new Drone(1L, DroneStatus.I_DRIFT);
+        Drone drone2 = new Drone(2L, DroneStatus.I_DRIFT);
+        List<Drone> availableDrones = List.of(drone1, drone2);
 
-        given(deliveryRepository.findById(300L)).willReturn(Optional.of(existingDelivery));
-        given(droneRepository.findById(999L)).willReturn(Optional.of(activeDrone));
+        given(deliveryRepository.findById(300L)).willReturn(Optional.of(delivery));
+        given(droneRepository.findAll()).willReturn(availableDrones);
         given(deliveryRepository.save(any(Delivery.class)))
-                .willAnswer(invocation -> invocation.getArgument(0)); // return the updated delivery
+                .willAnswer(invocation -> invocation.getArgument(0)); // Simulate saving delivery
 
         // when
-        Delivery scheduled = deliveryService.scheduleDelivery(300L, 999L);
+        Delivery scheduledDelivery = deliveryService.scheduleDelivery(300L);
 
         // then
-        assertNotNull(scheduled);
-        assertEquals(activeDrone, scheduled.getDrone());
-        verify(deliveryRepository).save(scheduled);
+        assertNotNull(scheduledDelivery.getDrone());
+        assertTrue(availableDrones.contains(scheduledDelivery.getDrone()),
+                "Assigned drone should be one of the available drones.");
+        verify(deliveryRepository).findById(300L);
+        verify(droneRepository).findAll();
+        verify(deliveryRepository).save(scheduledDelivery);
     }
+
 
     @Test
     void finishDelivery_whenDeliveryNotFound_throwsException() {

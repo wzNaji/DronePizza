@@ -19,6 +19,7 @@ public class Pizza {
         this.title = title;
         this.price = price;
     }
+
     public Pizza() {
     }
 
