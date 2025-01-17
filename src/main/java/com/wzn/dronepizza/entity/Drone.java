@@ -1,7 +1,7 @@
 package com.wzn.dronepizza.entity;
 
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
+
 
 import java.util.UUID;
 
